@@ -209,32 +209,6 @@ export default function About() {
                 </p>
               </motion.div>
             ))}
-
-            {/* Download Resume CTA */}
-            {/* <motion.a */}
-              href="#"
-              variants={itemVariants}
-              whileHover={{ y: -5, scale: 1.02 }}
-              className="sm:col-span-2 bg-gradient-to-r from-[#0066FF]/10 to-[#00D4FF]/10 rounded-3xl border border-[#0066FF]/30 hover:border-[#00D4FF]/50 transition-all group flex items-center justify-between cursor-pointer"
-              style={{ padding: "40px" }}
-            >
-              <div className="flex items-center" style={{ gap: "28px" }}>
-                <div className="rounded-2xl bg-gradient-to-br from-[#0066FF] to-[#00D4FF] flex items-center justify-center" style={{ width: "72px", height: "72px" }}>
-                  <i className="fas fa-file-download text-3xl text-white" />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-semibold text-white" style={{ marginBottom: "10px" }}>Download Resume</h3>
-                  <p className="text-gray-400 text-base">Get my detailed CV in PDF format</p>
-                </div>
-              </div>
-              <motion.div
-                className="rounded-full bg-[rgba(255,255,255,0.05)] flex items-center justify-center group-hover:bg-[#0066FF] transition-colors"
-                style={{ width: "56px", height: "56px" }}
-                whileHover={{ x: 5 }}
-              >
-                <i className="fas fa-arrow-right text-lg text-gray-400 group-hover:text-white transition-colors" />
-              </motion.div>
-            {/* </motion.a> */}
           </motion.div>
         </motion.div>
       </div>
