@@ -11,10 +11,10 @@ const quickLinks = [
 ];
 
 const socialLinks = [
-  { icon: "fab fa-github", url: "https://github.com/ahmermalik", label: "GitHub" },
-  { icon: "fab fa-linkedin-in", url: "https://linkedin.com/in/ahmermalik", label: "LinkedIn" },
-  { icon: "fab fa-twitter", url: "https://twitter.com/ahmermalik", label: "Twitter" },
-  { icon: "fab fa-instagram", url: "https://instagram.com/ahmermalik", label: "Instagram" },
+   { icon: "fab fa-github", url: "https://github.com/ahmermalik099", label: "GitHub" },
+  { icon: "fab fa-linkedin-in", url: "https://linkedin.com/in/ahmer-malik-478836256", label: "LinkedIn" },
+  // { icon: "fab fa-twitter", url: "https://twitter.com/ahmermalik", label: "Twitter" },
+  { icon: "fab fa-instagram", url: "https://instagram.com/ahmer._.malik", label: "Instagram" },
 ];
 
 export default function Footer() {

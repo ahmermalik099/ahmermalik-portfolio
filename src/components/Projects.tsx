@@ -29,6 +29,7 @@ const projects = [
     technologies: ["Flutter", "Provider", "WSO2", "REST APIs"],
     featured: true,
     professional: true,
+    activeUsers: 15000,
   },
   {
     id: 2,
@@ -41,6 +42,7 @@ const projects = [
     technologies: ["Flutter", "Bloc", "Video Player", "Firebase"],
     featured: true,
     professional: true,
+    activeUsers: 1000000,
   },
   {
     id: 3,
@@ -52,6 +54,7 @@ const projects = [
     color: "#4CAF50",
     technologies: ["Kotlin", "Android", "MVVM", "REST APIs"],
     professional: true,
+    activeUsers: 5000,
   },
   {
     id: 4,
@@ -243,7 +246,7 @@ export default function Projects() {
                     </motion.div>
                   </div>
 
-                  {/* Badges */}
+                  {/* Featured Badge */}
                   <div className="absolute top-4 left-4 flex gap-2">
                     {project.featured && (
                       <span className="bg-[#0066FF] text-white text-xs font-semibold rounded-full flex items-center gap-1.5" style={{ padding: "6px 14px" }}>
@@ -251,13 +254,21 @@ export default function Projects() {
                         Featured
                       </span>
                     )}
-                    {project.activeUsers && project.activeUsers > 10000 && (
+                  </div>
+
+                  {/* User Count Badge */}
+                  {project.activeUsers && (
+                    <div className="absolute bottom-4 left-4">
                       <span className="bg-[#00D4FF] text-white text-xs font-semibold rounded-full flex items-center gap-1.5" style={{ padding: "6px 14px" }}>
                         <i className="fas fa-user" />
-                        {Math.round(project.activeUsers / 100) / 10}k
+                        {project.activeUsers >= 1000000
+                          ? `${Math.round(project.activeUsers / 100000) / 10}M`
+                          : project.activeUsers >= 1000
+                          ? `${Math.round(project.activeUsers / 100) / 10}k`
+                          : project.activeUsers}
                       </span>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
                   {/* Category Badge */}
                   <div className="absolute top-4 right-4">
