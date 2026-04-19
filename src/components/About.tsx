@@ -10,6 +10,33 @@ const stats = [
   { number: "30+", label: "Skills Mastered", icon: "fas fa-code" },
 ];
 
+const education = [
+  {
+    icon: "fas fa-university",
+    degree: "Bachelor of Computer Science",
+    institution: "Air University",
+    location: "Islamabad",
+    year: "2024",
+    color: "#0066FF",
+  },
+  {
+    icon: "fas fa-graduation-cap",
+    degree: "HSSC – Pre-Engineering",
+    institution: "OPF College H-8/4",
+    location: "Islamabad",
+    year: "2019",
+    color: "#00D4FF",
+  },
+  {
+    icon: "fas fa-school",
+    degree: "Matric (SSC)",
+    institution: "Army Public School Westridge-3",
+    location: "Rawalpindi",
+    year: "2017",
+    color: "#FF6B6B",
+  },
+];
+
 const highlights = [
   {
     icon: "fas fa-mobile-alt",
@@ -206,6 +233,76 @@ export default function About() {
                 </h3>
                 <p className="text-gray-400 text-base relative z-10" style={{ lineHeight: "1.8", paddingRight: "20px" }}>
                   {highlight.description}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
+
+        {/* Education Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          style={{ marginTop: "100px" }}
+        >
+          <div className="text-center" style={{ marginBottom: "60px" }}>
+            <h2 className="section-title">
+              My <span className="gradient-text">Education</span>
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed" style={{ marginTop: "24px" }}>
+              The academic foundation that shaped my journey in computer science
+            </p>
+          </div>
+
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            className="grid grid-cols-1 md:grid-cols-3"
+            style={{ gap: "28px" }}
+          >
+            {education.map((edu) => (
+              <motion.div
+                key={edu.degree}
+                variants={itemVariants}
+                whileHover={{ y: -8, scale: 1.02 }}
+                className="bg-[#111] rounded-3xl border border-[rgba(255,255,255,0.06)] hover:border-[rgba(0,102,255,0.3)] transition-all group relative overflow-hidden"
+                style={{ padding: "36px" }}
+              >
+                <div
+                  className="absolute top-0 right-0 w-32 h-32 rounded-full blur-[60px] opacity-0 group-hover:opacity-20 transition-opacity"
+                  style={{ background: edu.color }}
+                />
+
+                <div className="flex items-start justify-between relative z-10" style={{ marginBottom: "24px" }}>
+                  <div
+                    className="rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform"
+                    style={{ background: `${edu.color}15`, width: "60px", height: "60px" }}
+                  >
+                    <i className={`${edu.icon} text-2xl`} style={{ color: edu.color }} />
+                  </div>
+                  <span
+                    className="text-sm font-semibold rounded-full"
+                    style={{
+                      color: edu.color,
+                      background: `${edu.color}15`,
+                      padding: "6px 14px",
+                    }}
+                  >
+                    {edu.year}
+                  </span>
+                </div>
+
+                <h3 className="text-lg font-semibold text-white relative z-10" style={{ marginBottom: "10px" }}>
+                  {edu.degree}
+                </h3>
+                <p className="text-gray-300 text-base relative z-10" style={{ marginBottom: "8px" }}>
+                  {edu.institution}
+                </p>
+                <p className="text-gray-500 text-sm relative z-10 flex items-center" style={{ gap: "8px" }}>
+                  <i className="fas fa-map-marker-alt text-xs" />
+                  {edu.location}
                 </p>
               </motion.div>
             ))}

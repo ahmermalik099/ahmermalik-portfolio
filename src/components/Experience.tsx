@@ -7,7 +7,7 @@ const experiences = [
   {
     title: "Associate Software Engineer",
     company: "Mercurial Minds",
-    period: "May 2023 - Present",
+    period: "May 2024 - Present",
     location: "Islamabad, Pakistan",
     description:
       "Working on enterprise-level mobile applications using Flutter. Led development of ZONG HRMS and contributed to JAZZ Tamasha video streaming platform.",

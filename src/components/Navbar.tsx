@@ -6,9 +6,9 @@ import { motion, AnimatePresence } from "framer-motion";
 const navLinks = [
   { name: "Home", href: "#home", icon: "fas fa-home" },
   { name: "About", href: "#about", icon: "fas fa-user" },
-  { name: "Skills", href: "#skills", icon: "fas fa-code" },
   { name: "Experience", href: "#experience", icon: "fas fa-briefcase" },
   { name: "Projects", href: "#projects", icon: "fas fa-folder-open" },
+  { name: "Skills", href: "#skills", icon: "fas fa-code" },
   { name: "Certifications", href: "#certifications", icon: "fas fa-certificate" },
   { name: "Contact", href: "#contact", icon: "fas fa-envelope" },
 ];
@@ -80,7 +80,7 @@ export default function Navbar() {
         </motion.a>
 
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex items-center gap-2">
+        <div className="hidden lg:flex items-center" style={{ gap: "8px" }}>
           {navLinks.map((link, index) => (
             <motion.a
               key={link.name}
@@ -92,11 +92,12 @@ export default function Navbar() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`relative rounded-lg text-sm font-medium transition-all ${
                 activeSection === link.href.substring(1)
                   ? "text-white"
                   : "text-gray-400 hover:text-white hover:bg-white/5"
               }`}
+              style={{ padding: "10px 18px" }}
             >
               {activeSection === link.href.substring(1) && (
                 <motion.div
