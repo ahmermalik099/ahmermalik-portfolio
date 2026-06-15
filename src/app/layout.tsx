@@ -1,21 +1,32 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-  variable: "--font-inter",
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-body",
+  display: "swap",
+});
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["italic", "normal"],
+  variable: "--font-display",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Ahmer Malik | Flutter Developer",
-  description: "Professional Flutter Developer specializing in mobile app development with 2+ years of experience",
-  keywords: ["Flutter", "Mobile Developer", "Dart", "Android", "iOS", "Software Engineer"],
+  title: "Ahmer Malik — Flutter Developer",
+  description:
+    "Flutter Developer crafting beautiful, high-performance cross-platform mobile experiences. 2+ years building enterprise and consumer apps.",
+  keywords: ["Flutter", "Mobile Developer", "Dart", "Android", "iOS", "Software Engineer", "Ahmer Malik"],
   authors: [{ name: "Ahmer Malik" }],
   openGraph: {
-    title: "Ahmer Malik | Flutter Developer",
-    description: "Professional Flutter Developer specializing in mobile app development",
+    title: "Ahmer Malik — Flutter Developer",
+    description:
+      "Flutter Developer crafting beautiful, high-performance cross-platform mobile experiences.",
     type: "website",
   },
 };
@@ -26,14 +37,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         />
       </head>
-      <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning>
+      <body
+        className={`${inter.variable} ${instrumentSerif.variable} font-body bg-bg text-text-primary antialiased`}
+        suppressHydrationWarning
+      >
         {children}
       </body>
     </html>

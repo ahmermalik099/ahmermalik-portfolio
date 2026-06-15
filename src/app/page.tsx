@@ -1,27 +1,48 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import {
+  LoadingScreen,
   Navbar,
   Hero,
-  About,
-  Skills,
-  Experience,
+  Tools,
   Projects,
+  About,
+  Experience,
+  Skills,
   Certifications,
   Contact,
-  Footer,
 } from "@/components";
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Lock scroll while the loading screen is visible
+  useEffect(() => {
+    document.body.style.overflow = isLoading ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isLoading]);
+
   return (
-    <main className="min-h-screen bg-[#0a0a0a]">
-      <Navbar />
-      <Hero />
-      <About />
-      <Experience />
-      <Projects />
-      <Skills />
-      <Certifications />
-      <Contact />
-      <Footer />
-    </main>
+    <>
+      <AnimatePresence>
+        {isLoading && <LoadingScreen onComplete={() => setIsLoading(false)} />}
+      </AnimatePresence>
+
+      <main className="min-h-screen bg-bg">
+        <Navbar />
+        <Hero />
+        <About />
+        <Experience />
+        <Tools />
+        <Skills />
+        <Projects />
+        <Certifications />
+        <Contact />
+      </main>
+    </>
   );
 }

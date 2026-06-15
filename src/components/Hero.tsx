@@ -1,328 +1,282 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { motion, useScroll, useTransform } from "framer-motion";
 
-const roles = [
-  "Flutter Developer",
-  "Mobile App Developer",
-  "UI/UX Enthusiast",
-  "Problem Solver",
+const roles = ["Flutter", "Mobile", "Creative", "Problem-Solving"];
+
+/* ------------------------------------------------------------------ */
+/* A simple, clean code-editor screen                                  */
+/* ------------------------------------------------------------------ */
+const codeLines = [
+  [{ w: "w-10", c: "#89AACC" }, { w: "w-16", c: "#E0556B" }, { w: "w-8", c: "#7FB069" }],
+  [{ w: "w-6", c: "#FFB86B" }, { w: "w-24", c: "#cfcfcf" }],
+  [{ w: "w-12", c: "#89AACC" }, { w: "w-10", c: "#FFB86B" }, { w: "w-20", c: "#7FB069" }],
+  [{ w: "w-20", c: "#cfcfcf" }],
+  [{ w: "w-8", c: "#E0556B" }, { w: "w-14", c: "#89AACC" }],
+  [{ w: "w-16", c: "#7FB069" }, { w: "w-10", c: "#cfcfcf" }, { w: "w-6", c: "#FFB86B" }],
+  [{ w: "w-12", c: "#89AACC" }, { w: "w-24", c: "#cfcfcf" }],
 ];
 
-const socialLinks = [
-   { icon: "fab fa-github", url: "https://github.com/ahmermalik099", label: "GitHub" },
-  { icon: "fab fa-linkedin-in", url: "https://linkedin.com/in/ahmer-malik-478836256", label: "LinkedIn" },
-  // { icon: "fab fa-twitter", url: "https://twitter.com/ahmermalik", label: "Twitter" },
-  { icon: "fab fa-instagram", url: "https://instagram.com/ahmer._.malik", label: "Instagram" },
-];
+function SystemMock() {
+  return (
+    <div className="w-full overflow-hidden bg-surface">
+      {/* Title bar */}
+      <div className="flex items-center gap-2 border-b border-stroke bg-bg/60 px-4 py-2.5">
+        <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+        <span className="ml-3 font-mono text-xs text-text-primary/70">main.dart</span>
+      </div>
 
-const techStack = [
-  { icon: "fab fa-flutter", color: "#02569B", name: "Flutter" },
-  { icon: "fas fa-fire", color: "#FFCA28", name: "Firebase" },
-  { icon: "fab fa-android", color: "#3DDC84", name: "Android" },
-  { icon: "fab fa-apple", color: "#ffffff", name: "iOS" },
-];
+      {/* Editor body */}
+      <div className="flex p-4 md:p-5">
+        {/* Line numbers */}
+        <div className="mr-4 flex flex-col items-end gap-2.5 text-[10px] text-muted/50">
+          {codeLines.map((_, i) => (
+            <span key={i} className="leading-none">{i + 1}</span>
+          ))}
+        </div>
+
+        {/* Code lines */}
+        <div className="flex flex-1 flex-col gap-2.5">
+          {codeLines.map((line, i) => (
+            <div key={i} className="flex items-center gap-1.5" style={{ paddingLeft: `${(i % 3) * 14}px` }}>
+              {line.map((tok, j) => (
+                <span
+                  key={j}
+                  className={`${tok.w} h-2 rounded-full`}
+                  style={{ background: tok.c, opacity: 0.85 }}
+                />
+              ))}
+              {i === codeLines.length - 1 && (
+                <span className="ml-0.5 h-3.5 w-[2px] animate-pulse bg-text-primary/70" />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Keyboard built from key rows                                        */
+/* ------------------------------------------------------------------ */
+function Keyboard() {
+  const rows = [14, 14, 13, 12];
+  return (
+    <div className="rounded-xl border border-white/10 bg-gradient-to-b from-[#161616] to-[#0d0d0d] p-2 shadow-lg shadow-black/50">
+      <div className="space-y-1.5">
+        {rows.map((count, r) => (
+          <div key={r} className="flex justify-center gap-1.5">
+            {Array.from({ length: count }).map((_, k) => (
+              <span key={k} className="h-3.5 w-3.5 rounded-[3px] bg-white/10 md:h-4 md:w-4" />
+            ))}
+          </div>
+        ))}
+        {/* spacebar row */}
+        <div className="flex justify-center gap-1.5">
+          <span className="h-3.5 w-3.5 rounded-[3px] bg-white/10 md:h-4 md:w-4" />
+          <span className="h-3.5 w-32 rounded-[3px] bg-white/10 md:h-4" />
+          <span className="h-3.5 w-3.5 rounded-[3px] bg-white/10 md:h-4 md:w-4" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* The whole workspace: monitor + keyboard + mat + props               */
+/* ------------------------------------------------------------------ */
+function DeskScene() {
+  return (
+    <div className="relative w-[min(96vw,1120px)]">
+      {/* Monitor */}
+      <div className="relative z-20 mx-auto w-[86%]">
+        <div className="rounded-2xl border border-white/12 bg-[#070707] p-2.5 shadow-2xl shadow-black/70">
+          <div className="overflow-hidden rounded-xl ring-1 ring-white/5">
+            <SystemMock />
+          </div>
+        </div>
+        {/* stand */}
+        <div className="mx-auto h-9 w-9 bg-gradient-to-b from-white/12 to-white/[0.04]" />
+        <div className="mx-auto h-2.5 w-44 rounded-full bg-white/10 shadow-md shadow-black/40" />
+      </div>
+
+      {/* Desk surface with keyboard, mat, mouse (tilted flat) */}
+      <div className="relative z-10 mt-3 [perspective:1400px]">
+        <div className="origin-top [transform:rotateX(52deg)]">
+          {/* Mat */}
+          <div className="mx-auto w-[78%] rounded-[18px] border border-white/[0.06] bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-5 shadow-[0_30px_60px_rgba(0,0,0,0.5)]">
+            <div className="flex items-center justify-center gap-5">
+              <div className="w-[72%]">
+                <Keyboard />
+              </div>
+              {/* Mouse */}
+              <div className="h-12 w-7 rounded-[14px] border border-white/10 bg-gradient-to-b from-[#161616] to-[#0d0d0d] shadow-lg shadow-black/50">
+                <div className="mx-auto mt-1.5 h-3 w-[2px] rounded-full bg-white/15" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Props */}
+      {/* Coffee mug */}
+      <div className="absolute -left-1 top-[34%] z-20 hidden sm:block">
+        <div className="relative h-12 w-11 rounded-b-xl rounded-t-md border border-white/12 bg-gradient-to-b from-[#1a1a1a] to-[#0e0e0e]">
+          <div className="absolute -right-2.5 top-2 h-5 w-4 rounded-r-full border border-white/12" />
+          <div className="absolute left-1.5 right-1.5 top-1 h-1.5 rounded-full bg-white/10" />
+          <div className="absolute left-1/2 top-[-10px] h-3 w-[2px] -translate-x-1/2 rounded-full bg-white/10" />
+        </div>
+      </div>
+      {/* Plant */}
+      <div className="absolute -right-1 top-[28%] z-20 hidden sm:block">
+        <div className="relative flex flex-col items-center">
+          <div className="flex items-end gap-0.5">
+            <span className="h-6 w-2 rotate-[-18deg] rounded-full bg-gradient-to-t from-[#3a5a45] to-[#5d8a6a]" />
+            <span className="h-8 w-2 rounded-full bg-gradient-to-t from-[#3a5a45] to-[#6fa07e]" />
+            <span className="h-6 w-2 rotate-[18deg] rounded-full bg-gradient-to-t from-[#3a5a45] to-[#5d8a6a]" />
+          </div>
+          <div className="h-7 w-9 rounded-b-lg rounded-t-sm border border-white/12 bg-gradient-to-b from-[#2a2a2a] to-[#141414]" />
+        </div>
+      </div>
+      {/* Phone */}
+      <div className="absolute bottom-[6%] right-[10%] z-20 hidden md:block">
+        <div className="h-20 w-11 rounded-[12px] border border-white/12 bg-[#070707] p-1 shadow-lg shadow-black/50">
+          <div className="h-full w-full rounded-[8px] bg-gradient-to-br from-[#4E85BF]/30 to-[#89AACC]/10" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Hero() {
-  const [currentRole, setCurrentRole] = useState(0);
-  const [displayText, setDisplayText] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [roleIndex, setRoleIndex] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end end"],
+  });
+
+  // Zoom the whole desk, focusing on the monitor screen
+  const sceneScale = useTransform(scrollYProgress, [0, 1], [1.08, 3.4]);
+  const dimOpacity = useTransform(scrollYProgress, [0, 0.4], [0.34, 0]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
+  const textY = useTransform(scrollYProgress, [0, 0.3], [0, -90]);
+  const darkenOpacity = useTransform(scrollYProgress, [0.72, 1], [0, 1]);
+  const hintOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
 
   useEffect(() => {
-    const currentText = roles[currentRole];
-    const timeout = setTimeout(
-      () => {
-        if (!isDeleting) {
-          if (displayText.length < currentText.length) {
-            setDisplayText(currentText.slice(0, displayText.length + 1));
-          } else {
-            setTimeout(() => setIsDeleting(true), 2000);
-          }
-        } else {
-          if (displayText.length > 0) {
-            setDisplayText(displayText.slice(0, -1));
-          } else {
-            setIsDeleting(false);
-            setCurrentRole((prev) => (prev + 1) % roles.length);
-          }
-        }
-      },
-      isDeleting ? 50 : 100
-    );
+    const interval = setInterval(() => setRoleIndex((i) => (i + 1) % roles.length), 2000);
+    return () => clearInterval(interval);
+  }, []);
 
-    return () => clearTimeout(timeout);
-  }, [displayText, isDeleting, currentRole]);
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      tl.fromTo(".name-reveal", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 1.2, delay: 0.1 }).fromTo(
+        ".blur-in",
+        { opacity: 0, filter: "blur(10px)", y: 20 },
+        { opacity: 1, filter: "blur(0px)", y: 0, duration: 1, stagger: 0.1 },
+        0.3
+      );
+    }, stickyRef);
+    return () => ctx.revert();
+  }, []);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" as const },
-    },
+  const go = (href: string) => {
+    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <section
-      id="home"
-      className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20"
-    >
-      {/* Animated Background Gradient */}
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Primary Glow */}
-        <motion.div
-          className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#0066FF]/15 rounded-full blur-[150px]"
-          animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.2, 0.4, 0.2],
-            x: [0, 50, 0],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
+    <section id="home" ref={sectionRef} className="relative h-[280vh]">
+      <div ref={stickyRef} className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
+        {/* Ambient background */}
+        <div className="absolute inset-0 bg-bg" />
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
           }}
         />
-        {/* Secondary Glow */}
-        <motion.div
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[#00D4FF]/15 rounded-full blur-[150px]"
-          animate={{
-            scale: [1.3, 1, 1.3],
-            opacity: [0.2, 0.4, 0.2],
-            x: [0, -50, 0],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2,
-          }}
-        />
-        {/* Radial gradient overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,102,255,0.1)_0%,transparent_60%)]" />
-      </div>
+        <div className="absolute left-1/2 top-1/2 h-[620px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4E85BF]/10 blur-[150px]" />
 
-      {/* Grid Pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-          backgroundSize: "60px 60px",
-        }}
-      />
-
-      <div className="container mx-auto px-8 relative z-10">
+        {/* The workspace (zooms into the screen) */}
         <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="grid lg:grid-cols-2 gap-20 items-center"
+          style={{ scale: sceneScale, transformOrigin: "50% 28%" }}
+          className="absolute z-10 flex items-center justify-center will-change-transform"
         >
-          {/* Content */}
-          <div className="text-center lg:text-left order-2 lg:order-1">
-            {/* Greeting Badge */}
-            <motion.div
-              variants={itemVariants}
-              className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-[#0066FF]/10 border border-[#0066FF]/30 mb-8"
-            >
-              <span className="w-2.5 h-2.5 rounded-full bg-[#00D4FF] animate-pulse" />
-              <span className="text-[#00D4FF] font-medium text-sm">Available for work</span>
-            </motion.div>
+          <DeskScene />
+        </motion.div>
+        <motion.div style={{ opacity: dimOpacity }} className="pointer-events-none absolute inset-0 z-10 bg-bg" />
 
-            <motion.h1
-              variants={itemVariants}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-8 leading-tight"
-            >
-              Hi, I&apos;m{" "}
-              <span className="gradient-text">Ahmer Malik</span>
-            </motion.h1>
+        {/* Fades */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-48 bg-gradient-to-t from-bg to-transparent" />
+        <motion.div style={{ opacity: darkenOpacity }} className="pointer-events-none absolute inset-0 z-20 bg-bg" />
 
-            <motion.div
-              variants={itemVariants}
-              className="text-xl sm:text-2xl md:text-3xl text-gray-400 mb-10 min-h-[40px] md:min-h-[48px]"
-            >
-              <span className="text-[#0066FF]">{displayText}</span>
-              <span className="typing-cursor" />
-            </motion.div>
+        {/* Soft scrim so text stays readable over the brighter scene */}
+        <motion.div
+          style={{ opacity: textOpacity }}
+          className="pointer-events-none absolute inset-0 z-20"
+        >
+          <div className="absolute left-1/2 top-1/2 h-[120vh] w-[120vh] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(10,10,10,0.85)_0%,rgba(10,10,10,0.55)_35%,transparent_60%)]" />
+        </motion.div>
 
-            <motion.p
-              variants={itemVariants}
-              className="text-gray-400 text-base md:text-lg max-w-xl mb-12 leading-loose mx-auto lg:mx-0"
-            >
-              Passionate Flutter Developer with <span className="text-white font-medium">2+ years</span> of experience
-              in building beautiful, high-performance cross-platform mobile applications.
-              Specialized in <span className="text-white font-medium">state management</span>,
-              <span className="text-white font-medium"> UI/UX design</span>, and
-              <span className="text-white font-medium"> clean architecture</span>.
-            </motion.p>
+        {/* Hero text */}
+        <motion.div
+          style={{ opacity: textOpacity, y: textY }}
+          className="relative z-30 flex flex-col items-center px-6 text-center"
+        >
+          <p className="blur-in mb-8 text-xs uppercase tracking-[0.3em] text-muted opacity-0">Collection &apos;26</p>
 
-            {/* CTA Buttons */}
-            <motion.div
-              variants={itemVariants}
-              className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start mb-12"
-            >
-              <motion.a
-                href="#contact"
-                className="btn-primary"
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <i className="fas fa-paper-plane" />
-                Get In Touch
-              </motion.a>
-              <motion.a
-                href="#projects"
-                className="btn-secondary"
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <i className="fas fa-briefcase" />
-                View Projects
-              </motion.a>
-            </motion.div>
+          <h1 className="name-reveal mb-6 font-display text-6xl italic leading-[0.9] tracking-tight text-text-primary opacity-0 md:text-8xl lg:text-9xl">
+            Ahmer Malik
+          </h1>
 
-            {/* Social Links */}
-            <motion.div variants={itemVariants} className="flex gap-4 justify-center lg:justify-start">
-              {socialLinks.map((social, index) => (
-                <motion.a
-                  key={social.label}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-xl bg-[#141414] border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-gray-400 hover:text-white hover:border-[#0066FF] hover:bg-[#0066FF]/10 transition-all"
-                  whileHover={{ scale: 1.1, y: -3 }}
-                  whileTap={{ scale: 0.9 }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1 + index * 0.1 }}
-                  title={social.label}
-                >
-                  <i className={`${social.icon} text-xl`} />
-                </motion.a>
-              ))}
-            </motion.div>
+          <p className="blur-in mb-6 text-lg text-text-primary/90 opacity-0 md:text-xl">
+            A{" "}
+            <span key={roleIndex} className="inline-block animate-role-fade-in font-display italic text-text-primary">
+              {roles[roleIndex]}
+            </span>{" "}
+            developer.
+          </p>
+
+          <p className="blur-in mb-12 max-w-md text-sm text-muted opacity-0 md:text-base">
+            Designing seamless cross-platform mobile experiences by focusing on the unique nuances which bring systems to life.
+          </p>
+
+          <div className="blur-in inline-flex flex-wrap items-center justify-center gap-4 opacity-0">
+            <button onClick={() => go("#work")} className="group relative rounded-full transition-transform duration-300 hover:scale-105">
+              <span className="gradient-ring absolute rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ inset: "-2px" }} />
+              <span className="relative block rounded-full bg-text-primary px-7 py-3.5 text-sm text-bg transition-colors duration-300 group-hover:bg-bg group-hover:text-text-primary">
+                See Works
+              </span>
+            </button>
+
+            <button onClick={() => go("#contact")} className="group relative rounded-full transition-transform duration-300 hover:scale-105">
+              <span className="gradient-ring absolute rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ inset: "-2px" }} />
+              <span className="relative block rounded-full border-2 border-stroke bg-bg px-7 py-3.5 text-sm text-text-primary transition-colors duration-300 group-hover:border-transparent">
+                Reach out…
+              </span>
+            </button>
           </div>
+        </motion.div>
 
-          {/* Profile Image Section */}
-          <motion.div
-            variants={itemVariants}
-            className="flex justify-center lg:justify-end order-1 lg:order-2"
-          >
-            <div className="relative">
-              {/* Rotating Gradient Border */}
-              <motion.div
-                className="absolute -inset-3 rounded-full opacity-60"
-                style={{
-                  background: "conic-gradient(from 0deg, #0066FF, #00D4FF, #0066FF, #00D4FF, #0066FF)",
-                  filter: "blur(20px)",
-                }}
-                animate={{ rotate: 360 }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
-              />
-
-              {/* Image Container */}
-              <div className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden bg-[#111] border-4 border-[#0a0a0a]">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#0066FF]/20 to-[#00D4FF]/20" />
-                <div className="w-full h-full flex items-center justify-center">
-                  <svg
-                    className="w-32 h-32 md:w-40 md:h-40 text-gray-700"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                  >
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Tech Stack Floating Icons */}
-              {techStack.map((tech, index) => {
-                const positions = [
-                  { top: "-10px", right: "10%" },
-                  { top: "20%", right: "-15px" },
-                  { bottom: "20%", left: "-15px" },
-                  { bottom: "-10px", left: "10%" },
-                ];
-                return (
-                  <motion.div
-                    key={tech.name}
-                    className="absolute w-12 h-12 sm:w-14 sm:h-14 bg-[#141414] rounded-xl flex items-center justify-center border border-[rgba(255,255,255,0.1)] shadow-lg"
-                    style={positions[index]}
-                    animate={{
-                      y: [0, index % 2 === 0 ? -8 : 8, 0],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      delay: index * 0.5,
-                      ease: "easeInOut"
-                    }}
-                    whileHover={{ scale: 1.2 }}
-                    title={tech.name}
-                  >
-                    <i className={`${tech.icon} text-xl sm:text-2xl`} style={{ color: tech.color }} />
-                  </motion.div>
-                );
-              })}
-
-              {/* Experience Badge */}
-              <motion.div
-                className="absolute -bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 bg-[#141414] rounded-full border border-[rgba(255,255,255,0.1)] shadow-lg flex items-center gap-3"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.2 }}
-              >
-                <span className="text-3xl font-bold gradient-text">2+</span>
-                <span className="text-gray-400 text-base">Years Exp.</span>
-              </motion.div>
-            </div>
-          </motion.div>
+        {/* Scroll indicator */}
+        <motion.div style={{ opacity: hintOpacity }} className="absolute bottom-8 left-1/2 z-30 flex -translate-x-1/2 flex-col items-center gap-3">
+          <span className="text-xs uppercase tracking-[0.2em] text-muted">Scroll</span>
+          <div className="relative h-10 w-px overflow-hidden bg-stroke">
+            <div className="accent-gradient absolute inset-x-0 h-1/2 animate-scroll-down" />
+          </div>
         </motion.div>
       </div>
-
-      {/* Scroll Indicator */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5 }}
-      >
-        <motion.a
-          href="#about"
-          className="flex flex-col items-center gap-2 text-gray-500 hover:text-white transition-colors"
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <span className="text-xs uppercase tracking-widest font-medium">Scroll Down</span>
-          <div className="w-6 h-10 border-2 border-current rounded-full flex justify-center pt-2">
-            <motion.div
-              className="w-1.5 h-2.5 bg-current rounded-full"
-              animate={{ y: [0, 10, 0], opacity: [1, 0.3, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            />
-          </div>
-        </motion.a>
-      </motion.div>
     </section>
   );
 }

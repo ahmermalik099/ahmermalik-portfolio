@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import SectionHeader from "./SectionHeader";
 
 interface Skill {
   name: string;
@@ -11,8 +12,8 @@ interface Skill {
 
 const skillsData: Record<string, Skill[]> = {
   "Flutter & Dart": [
-    { name: "Dart", level: 95, icon: "fab fa-dart-lang" },
-    { name: "Flutter", level: 95, icon: "fab fa-flutter" },
+    { name: "Dart", level: 95, icon: "fas fa-bullseye" },
+    { name: "Flutter", level: 95, icon: "fas fa-mobile-screen" },
     { name: "Flutter Widgets", level: 90, icon: "fas fa-cubes" },
     { name: "Custom Painters", level: 85, icon: "fas fa-paint-brush" },
     { name: "Animations", level: 88, icon: "fas fa-film" },
@@ -20,55 +21,34 @@ const skillsData: Record<string, Skill[]> = {
   ],
   "State Management": [
     { name: "Provider", level: 90, icon: "fas fa-database" },
-    { name: "Bloc/Cubit", level: 88, icon: "fas fa-layer-group" },
+    { name: "Bloc / Cubit", level: 88, icon: "fas fa-layer-group" },
     { name: "GetX", level: 85, icon: "fas fa-bolt" },
     { name: "Riverpod", level: 82, icon: "fas fa-stream" },
-    // { name: "Redux", level: 75, icon: "fas fa-exchange-alt" },
-    // { name: "MobX", level: 70, icon: "fas fa-sync" },
   ],
   "Backend & Database": [
     { name: "Firebase", level: 88, icon: "fas fa-fire" },
     { name: "REST APIs", level: 90, icon: "fas fa-server" },
     { name: "SQLite", level: 85, icon: "fas fa-database" },
-    { name: "GraphQL", level: 75, icon: "fas fa-project-diagram" },
-    { name: "Hive/ObjectBox", level: 82, icon: "fas fa-box" },
-    // { name: "Cloud Functions", level: 78, icon: "fas fa-cloud" },
+    { name: "GraphQL", level: 75, icon: "fas fa-diagram-project" },
+    { name: "Hive / ObjectBox", level: 82, icon: "fas fa-box" },
   ],
   "Tools & DevOps": [
     { name: "Git & GitHub", level: 90, icon: "fab fa-git-alt" },
-    // { name: "Android Studio", level: 90, icon: "fab fa-android" },
-    // { name: "VS Code", level: 92, icon: "fas fa-code" },
-    // { name: "Figma", level: 85, icon: "fab fa-figma" },
-    { name: "CI/CD", level: 80, icon: "fas fa-infinity" },
-    { name: "Jira/Trello", level: 85, icon: "fab fa-trello" },
+    { name: "CI / CD", level: 80, icon: "fas fa-infinity" },
+    { name: "Jira / Trello", level: 85, icon: "fab fa-trello" },
   ],
   "Other Skills": [
-    { name: "UI/UX Design", level: 85, icon: "fas fa-palette" },
+    { name: "UI / UX Design", level: 85, icon: "fas fa-palette" },
     { name: "Material Design", level: 88, icon: "fas fa-shapes" },
     { name: "Cupertino (iOS)", level: 85, icon: "fab fa-apple" },
     { name: "Unit Testing", level: 80, icon: "fas fa-vial" },
-    // { name: "Integration Testing", level: 78, icon: "fas fa-clipboard-check" },
-    { name: "App Store/Play Store", level: 85, icon: "fas fa-store" },
+    { name: "App / Play Store", level: 85, icon: "fas fa-store" },
   ],
 };
 
-const categories = [
-  { id: "all", label: "All Skills", icon: "fas fa-th-large" },
-  { id: "Flutter & Dart", label: "Flutter & Dart", icon: "fab fa-flutter" },
-  { id: "State Management", label: "State Management", icon: "fas fa-layer-group" },
-  { id: "Backend & Database", label: "Backend & DB", icon: "fas fa-database" },
-  { id: "Tools & DevOps", label: "Tools & DevOps", icon: "fas fa-tools" },
-  { id: "Other Skills", label: "Other Skills", icon: "fas fa-star" },
-];
+const categories = ["All", ...Object.keys(skillsData)];
 
-function getSkillColor(level: number): string {
-  if (level >= 90) return "#00D4FF";
-  if (level >= 80) return "#0066FF";
-  if (level >= 70) return "#5E9FFF";
-  return "#7DB3FF";
-}
-
-function getSkillLabel(level: number): string {
+function levelLabel(level: number) {
   if (level >= 90) return "Expert";
   if (level >= 80) return "Advanced";
   if (level >= 70) return "Intermediate";
@@ -76,178 +56,80 @@ function getSkillLabel(level: number): string {
 }
 
 export default function Skills() {
-  const [activeCategory, setActiveCategory] = useState("all");
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [active, setActive] = useState("All");
 
-  const getFilteredSkills = (): Skill[] => {
-    if (activeCategory === "all") {
-      return Object.values(skillsData).flat();
-    }
-    return skillsData[activeCategory] || [];
-  };
-
-  const filteredSkills = getFilteredSkills();
+  const skills =
+    active === "All" ? Object.values(skillsData).flat() : skillsData[active] ?? [];
 
   return (
-    <section id="skills" className="section" ref={ref} style={{ background: "linear-gradient(180deg, #0a0a0a 0%, #0f0f0f 100%)" }}>
-      <div className="container">
-        {/* Section Title */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-20"
-        >
-          <h2 className="section-title">
-            My <span className="gradient-text">Skills</span>
-          </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto mt-8 text-lg leading-relaxed">
-            Technologies and tools I use to bring ideas to life. Continuously learning and improving.
-          </p>
-        </motion.div>
+    <section id="skills" className="bg-bg py-20 md:py-28">
+      <div className="mx-auto max-w-[1200px] px-6 md:px-10 lg:px-16">
+        <SectionHeader
+          eyebrow="Toolbox"
+          title={
+            <>
+              Skills & <span className="font-display italic">expertise</span>
+            </>
+          }
+          subtitle="The technologies and tools I reach for to bring ideas to life."
+        />
 
-        {/* Category Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex flex-wrap justify-center"
-          style={{ gap: "16px", marginBottom: "64px" }}
-        >
-          {categories.map((category) => (
-            <motion.button
-              key={category.id}
-              onClick={() => setActiveCategory(category.id)}
-              className={`rounded-xl font-semibold text-sm transition-all flex items-center ${
-                activeCategory === category.id
-                  ? "bg-gradient-to-r from-[#0066FF] to-[#00D4FF] text-white shadow-lg shadow-blue-500/25"
-                  : "bg-[#161616] text-gray-400 hover:text-white border-2 border-[rgba(255,255,255,0.1)] hover:border-[#0066FF]/50"
+        {/* Filters */}
+        <div className="mt-10 flex flex-wrap gap-2">
+          {categories.map((c) => (
+            <button
+              key={c}
+              onClick={() => setActive(c)}
+              className={`rounded-full px-4 py-2 text-xs transition-colors sm:text-sm ${
+                active === c
+                  ? "bg-stroke/60 text-text-primary"
+                  : "text-muted hover:bg-stroke/40 hover:text-text-primary"
               }`}
-              style={{ padding: "14px 24px", gap: "12px" }}
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
             >
-              <i className={category.icon} />
-              {category.label}
-            </motion.button>
+              {c}
+            </button>
           ))}
-        </motion.div>
+        </div>
 
-        {/* Skills Grid */}
-        <motion.div
-          layout
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-          style={{ gap: "28px" }}
-        >
+        {/* Skills grid */}
+        <motion.div layout className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence mode="popLayout">
-            {filteredSkills.map((skill, index) => (
+            {skills.map((skill, i) => (
               <motion.div
                 key={skill.name}
                 layout
-                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.8, y: -20 }}
-                transition={{ duration: 0.4, delay: index * 0.03 }}
-                whileHover={{ y: -5, scale: 1.02 }}
-                className="bg-[#131313] rounded-2xl border border-[rgba(255,255,255,0.06)] hover:border-[rgba(0,102,255,0.3)] transition-all group relative overflow-hidden"
-                style={{ padding: "32px" }}
+                exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                transition={{ duration: 0.35, delay: i * 0.03 }}
+                className="rounded-2xl border border-stroke bg-surface p-6 transition-colors hover:border-white/20"
               >
-                {/* Background Glow */}
-                <div
-                  className="absolute top-0 right-0 w-32 h-32 rounded-full blur-[60px] opacity-0 group-hover:opacity-20 transition-opacity"
-                  style={{ background: getSkillColor(skill.level) }}
-                />
-
-                {/* Content */}
-                <div className="relative z-10">
-                  {/* Header */}
-                  <div className="flex items-center justify-between" style={{ marginBottom: "24px" }}>
-                    <div className="flex items-center" style={{ gap: "18px" }}>
-                      <div
-                        className="rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"
-                        style={{ background: `${getSkillColor(skill.level)}15`, width: "56px", height: "56px" }}
-                      >
-                        <i
-                          className={`${skill.icon} text-2xl`}
-                          style={{ color: getSkillColor(skill.level) }}
-                        />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-white text-lg group-hover:text-[#00D4FF] transition-colors" style={{ marginBottom: "4px" }}>
-                          {skill.name}
-                        </h3>
-                        <span
-                          className="text-sm font-medium"
-                          style={{ color: getSkillColor(skill.level) }}
-                        >
-                          {getSkillLabel(skill.level)}
-                        </span>
-                      </div>
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="grid h-11 w-11 place-items-center rounded-xl border border-stroke bg-bg">
+                      <i className={`${skill.icon} text-text-primary/70`} />
                     </div>
-                    <span
-                      className="text-3xl font-bold"
-                      style={{ color: getSkillColor(skill.level) }}
-                    >
-                      {skill.level}%
-                    </span>
+                    <div>
+                      <h3 className="text-sm text-text-primary">{skill.name}</h3>
+                      <span className="text-xs text-muted">{levelLabel(skill.level)}</span>
+                    </div>
                   </div>
+                  <span className="font-display text-2xl italic accent-text">{skill.level}</span>
+                </div>
 
-                  {/* Progress Bar */}
-                  <div className="bg-[#1f1f1f] rounded-full overflow-hidden relative" style={{ height: "12px" }}>
-                    <motion.div
-                      className="h-full rounded-full relative"
-                      style={{
-                        background: `linear-gradient(90deg, ${getSkillColor(skill.level)}, ${getSkillColor(skill.level)}99)`,
-                      }}
-                      initial={{ width: 0 }}
-                      animate={isInView ? { width: `${skill.level}%` } : {}}
-                      transition={{
-                        duration: 1.2,
-                        delay: 0.2 + index * 0.02,
-                        ease: "easeOut" as const,
-                      }}
-                    >
-                      {/* Shimmer */}
-                      <div className="progress-shimmer" />
-                    </motion.div>
-                  </div>
+                <div className="h-1.5 overflow-hidden rounded-full bg-stroke/60">
+                  <motion.div
+                    className="accent-gradient h-full rounded-full"
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${skill.level}%` }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, delay: 0.1 + i * 0.02, ease: "easeOut" }}
+                    style={{ boxShadow: "0 0 8px rgba(137, 170, 204, 0.35)" }}
+                  />
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
-        </motion.div>
-
-        {/* Stats Summary */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          className="grid grid-cols-2 md:grid-cols-4"
-          style={{ marginTop: "80px", gap: "28px" }}
-        >
-          {[
-            { label: "Total Skills", value: Object.values(skillsData).flat().length + "+", icon: "fas fa-code" },
-            { label: "Expert Level", value: Object.values(skillsData).flat().filter(s => s.level >= 90).length, icon: "fas fa-star" },
-            { label: "Advanced Level", value: Object.values(skillsData).flat().filter(s => s.level >= 80 && s.level < 90).length, icon: "fas fa-chart-line" },
-            { label: "Always Learning", value: "∞", icon: "fas fa-graduation-cap" },
-          ].map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 1 + index * 0.1 }}
-              whileHover={{ y: -5, scale: 1.02 }}
-              className="bg-[#131313] rounded-2xl border border-[rgba(255,255,255,0.06)] text-center hover:border-[rgba(0,102,255,0.3)] transition-all"
-              style={{ padding: "36px" }}
-            >
-              <div className="rounded-2xl bg-gradient-to-br from-[#0066FF]/20 to-[#00D4FF]/20 flex items-center justify-center mx-auto" style={{ width: "68px", height: "68px", marginBottom: "24px" }}>
-                <i className={`${stat.icon} text-2xl gradient-text`} />
-              </div>
-              <div className="text-4xl font-bold gradient-text" style={{ marginBottom: "12px" }}>{stat.value}</div>
-              <div className="text-gray-400 text-base">{stat.label}</div>
-            </motion.div>
-          ))}
         </motion.div>
       </div>
     </section>

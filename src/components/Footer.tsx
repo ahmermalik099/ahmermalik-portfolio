@@ -95,17 +95,7 @@ export default function Footer() {
             &copy; {currentYear} Ahmer Malik. All rights reserved.
           </p>
 
-          <p className="text-gray-500 text-base flex items-center gap-3">
-            Made with
-            <motion.span
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 1, repeat: Infinity }}
-              className="text-red-500"
-            >
-              <i className="fas fa-heart" />
-            </motion.span>
-            using Next.js & Framer Motion
-          </p>
+        
 
           {/* Scroll to Top */}
           <motion.button

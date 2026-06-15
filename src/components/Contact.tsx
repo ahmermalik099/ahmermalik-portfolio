@@ -1,133 +1,131 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import HlsVideo from "./HlsVideo";
 
-const contactInfo = [
-  {
-    icon: "fas fa-envelope",
-    label: "Email",
-    value: "ahmermalik099@gmail.com",
-    link: "mailto:ahmermalik099@gmail.com",
-    color: "#0066FF",
-  },
-  {
-    icon: "fas fa-phone",
-    label: "Phone",
-    value: "(+92) 345-5553444",
-    link: "tel:+923455553444",
-    color: "#00D4FF",
-  },
-  {
-    icon: "fas fa-map-marker-alt",
-    label: "Location",
-    value: "Islamabad, Pakistan",
-    link: "#",
-    color: "#FF6B6B",
-  },
-];
+const EMAIL = "ahmermalik099@gmail.com";
 
 const socialLinks = [
   { icon: "fab fa-github", url: "https://github.com/ahmermalik099", label: "GitHub" },
   { icon: "fab fa-linkedin-in", url: "https://linkedin.com/in/ahmer-malik-478836256", label: "LinkedIn" },
-  // { icon: "fab fa-twitter", url: "https://twitter.com/ahmermalik", label: "Twitter" },
   { icon: "fab fa-instagram", url: "https://instagram.com/ahmer._.malik", label: "Instagram" },
 ];
 
+const MARQUEE = Array.from({ length: 10 }, () => "OPEN TO OPPORTUNITIES").join(" • ");
+
 export default function Contact() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const marqueeRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState(false);
+  const year = 2026;
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(EMAIL);
+    } catch {
+      // Fallback for older browsers / insecure context
+      const el = document.createElement("textarea");
+      el.value = EMAIL;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  useEffect(() => {
+    if (!marqueeRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.to(".marquee-track", {
+        xPercent: -50,
+        duration: 40,
+        ease: "none",
+        repeat: -1,
+      });
+    }, marqueeRef);
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <section id="contact" className="section bg-[#0f0f0f]" ref={ref}>
-      <div className="container mx-auto px-8">
-        {/* Section Title */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-20"
+    <section id="contact" className="relative overflow-hidden bg-bg pt-16 pb-8 md:pt-20 md:pb-12">
+      {/* Background video (flipped vertically) */}
+      <div className="absolute inset-0">
+        <HlsVideo className="scale-y-[-1]" />
+        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-bg to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg to-transparent" />
+      </div>
+
+      {/* Marquee */}
+      <div ref={marqueeRef} className="relative z-10 overflow-hidden py-6">
+        <div className="marquee-track flex w-max whitespace-nowrap">
+          <span className="font-display text-5xl italic text-text-primary/90 md:text-7xl">{MARQUEE} • </span>
+          <span className="font-display text-5xl italic text-text-primary/90 md:text-7xl">{MARQUEE} • </span>
+        </div>
+      </div>
+
+      {/* CTA */}
+      <div className="relative z-10 mx-auto flex max-w-[1200px] flex-col items-center px-6 py-20 text-center md:py-28">
+        <p className="mb-6 text-xs uppercase tracking-[0.3em] text-muted">Get in touch</p>
+        <h2 className="mb-8 font-display text-5xl italic leading-[0.95] tracking-tight text-text-primary md:text-7xl lg:text-8xl">
+          Let&apos;s work<br />together.
+        </h2>
+
+        <button
+          onClick={copyEmail}
+          aria-label="Copy email address"
+          className="group relative rounded-full transition-transform duration-300 hover:scale-105"
         >
-          <h2 className="section-title">
-            Get In <span className="gradient-text">Touch</span>
-          </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto mt-8 text-lg leading-relaxed">
-            Have a project in mind or want to collaborate? Feel free to reach out!
-          </p>
-        </motion.div>
+          <span
+            className="gradient-ring absolute rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+            style={{ inset: "-2px" }}
+          />
+          <span className="relative flex items-center gap-2 rounded-full bg-text-primary px-8 py-4 text-sm text-bg transition-colors duration-300 group-hover:bg-bg group-hover:text-text-primary">
+            {copied ? (
+              <>
+                Copied! <i className="fas fa-check text-[0.85em]" />
+              </>
+            ) : (
+              <>
+                {EMAIL} <i className="far fa-copy text-[0.85em]" />
+              </>
+            )}
+          </span>
+        </button>
+      </div>
 
-        <div className="max-w-3xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="space-y-10"
-          >
-            <div>
-              <h3 className="text-3xl font-bold text-white mb-5">
-                Let&apos;s Work Together
-              </h3>
-              <p className="text-gray-400 leading-loose text-base">
-                I&apos;m always open to discussing new projects, creative ideas,
-                or opportunities to be part of your vision. Whether you have a
-                question or just want to say hi, I&apos;ll try my best to get
-                back to you!
-              </p>
-            </div>
+      {/* Footer bar */}
+      <div className="relative z-10 mx-auto max-w-[1200px] px-6 md:px-10 lg:px-16">
+        <div className="flex flex-col items-center justify-between gap-6 border-t border-stroke pt-8 md:flex-row">
+          {/* Availability */}
+          <div className="flex items-center gap-3 text-sm text-muted">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500" />
+            </span>
+            Available for projects
+          </div>
 
-            {/* Contact Cards */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-              {contactInfo.map((info, index) => (
-                <motion.a
-                  key={info.label}
-                  href={info.link}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
-                  whileHover={{ x: 10, scale: 1.02 }}
-                  className="flex items-center bg-[#111] rounded-2xl border border-[rgba(255,255,255,0.06)] hover:border-[rgba(0,102,255,0.3)] transition-all group"
-                  style={{ gap: "24px", padding: "24px" }}
-                >
-                  <div
-                    className="rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"
-                    style={{ background: `${info.color}15`, width: "60px", height: "60px" }}
-                  >
-                    <i className={`${info.icon} text-2xl`} style={{ color: info.color }} />
-                  </div>
-                  <div>
-                    <p className="text-gray-500 text-sm" style={{ marginBottom: "6px" }}>{info.label}</p>
-                    <p className="text-white font-medium text-lg">{info.value}</p>
-                  </div>
-                </motion.a>
-              ))}
-            </div>
+          {/* Socials */}
+          <div className="flex items-center gap-3">
+            {socialLinks.map((s) => (
+              <a
+                key={s.label}
+                href={s.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={s.label}
+                className="grid h-10 w-10 place-items-center rounded-full border border-stroke text-muted transition-colors hover:border-white/20 hover:text-text-primary"
+              >
+                <i className={s.icon} />
+              </a>
+            ))}
+          </div>
 
-            {/* Social Links */}
-            <div>
-              <h4 className="text-xl font-semibold text-white" style={{ marginBottom: "24px" }}>
-                Follow Me
-              </h4>
-              <div className="flex" style={{ gap: "16px" }}>
-                {socialLinks.map((social, index) => (
-                  <motion.a
-                    key={social.label}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 0.5 + index * 0.1 }}
-                    whileHover={{ y: -5, scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="rounded-xl bg-[#111] border border-[rgba(255,255,255,0.06)] flex items-center justify-center text-gray-400 hover:text-white hover:border-[#0066FF] hover:bg-[#0066FF]/10 transition-all"
-                    style={{ width: "56px", height: "56px" }}
-                  >
-                    <i className={`${social.icon} text-xl`} />
-                  </motion.a>
-                ))}
-              </div>
-            </div>
-          </motion.div>
+          {/* Copyright */}
+          <p className="text-xs text-muted">© {year} Ahmer Malik</p>
         </div>
       </div>
     </section>

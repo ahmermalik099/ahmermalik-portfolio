@@ -5,7 +5,18 @@
       "Bash(npm install:*)",
       "Bash(gh auth status:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git remote add:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git push:*)",
+      "Bash(npx next *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000 --max-time 30)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000 --max-time 5)",
+      "Bash(git config *)",
+      "Bash(node -e \"console.log\\('gsap', require\\('gsap/package.json'\\).version\\); console.log\\('hls.js', require\\('hls.js/package.json'\\).version\\); console.log\\('framer-motion', require\\('framer-motion/package.json'\\).version\\)\")",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(curl -s -o /dev/null -w \"port 3000 -> HTTP %{http_code}\\\\n\" http://localhost:3000)"
     ]
   }
 }
